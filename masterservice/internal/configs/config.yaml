@@ -1,0 +1,29 @@
+default: &default
+  name: Yet another open source forum using Golang, React and PostgreSQL..
+  database:
+    user: satellity
+    password: ""
+    host: localhost
+    port: 5432
+  github:
+    client_id: b9b78f
+    client_secret: d4e571ce
+  system:
+    attachments:
+      storage: "local"
+      path: "/path/to/assets"
+  operators:
+    - hi@masterservice
+
+
+
+
+development:
+  <<: *default
+  database:
+    name: masterservice_dev
+
+test:
+  <<: *default
+  database:
+    name: masterservice_test
