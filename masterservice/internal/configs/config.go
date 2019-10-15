@@ -31,6 +31,7 @@ type Option struct {
 			Path    string `yaml:"path"`
 		} `yaml:"attachments"`
 	} `yaml:"system"`
+	CSVFileName string `yaml:"csvFileName"`
 	Operators   []string `yaml:"operators"`
 	Environment string
 	OperatorSet map[string]bool

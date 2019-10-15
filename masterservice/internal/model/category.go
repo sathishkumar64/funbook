@@ -6,7 +6,7 @@ type Category struct {
 	Name        string
 	Alias       string
 	Description string
-	active      bool
+	Active      string
 }
 
 //SubCategory is used to define model.
@@ -16,5 +16,5 @@ type SubCategory struct {
 	Name          string
 	Alias         string
 	Description   string
-	active        bool
+	Active        string
 }

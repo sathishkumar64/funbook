@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"github.com/sathishkumar64/funbook/masterservice/internal/bulkupload"
+	"github.com/sathishkumar64/funbook/masterservice/internal/durable"
 	"log"
 	"os"
 	"path"
@@ -33,7 +36,7 @@ func main() {
 		if strings.Contains(dir, "cmd") {
 			back = "../.."
 		}
-		options.Config = path.Join(dir, back, "/masterservice/internal/configs/config.yaml")
+		options.Config = path.Join(dir, back, "/internal/configs/config.yaml")
 	}
 
 	if err := configs.Init(options.Config, options.Environment); err != nil {
@@ -43,7 +46,15 @@ func main() {
 	logger, err := zap.NewDevelopment()
 
 	config := configs.AppConfig
+	ctx := context.Background()
+	db := durable.OpenDatabaseClient(ctx, &durable.ConnectionInfo{
+		Host:     config.Database.Host,
+		Port:     config.Database.Port,
+		Name:     config.Database.Name,
+	})
+	defer db.Disconnect(ctx)
 
+	bulkupload.ParseCSV(context.Background(),config.CSVFileName)
 	if config.Environment == "production" {
 		logger, err = zap.NewProduction()
 	}
