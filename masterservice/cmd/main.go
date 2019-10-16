@@ -6,13 +6,12 @@ import (
 	"github.com/sathishkumar64/funbook/masterservice/internal/durable"
 	"github.com/sathishkumar64/funbook/masterservice/internal/service"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
-	flags "github.com/jessevdk/go-flags"
+	"github.com/jessevdk/go-flags"
 	"github.com/sathishkumar64/funbook/masterservice/internal/configs"
 	"go.uber.org/zap"
 )
@@ -29,9 +28,7 @@ func startService(ctx context.Context,db *mongo.Client, logger *zap.Logger,csvFi
 
 
 func main() {
-
 	logger, err := zap.NewDevelopment()
-
 	var options struct {
 		Config      string `short:"c" long:"config" description:"Where's the config file place, default /masterservice/internal/configs/config.yaml"`
 		Environment string `short:"e" long:"environment" default:"development"`
@@ -60,22 +57,10 @@ func main() {
 
 
 
-
 	config := configs.AppConfig
-
-
-	if config.Environment == "production" {
-		logger, err = zap.NewProduction()
-	}
-	defer logger.Sync()
-	if err != nil {
-		logger.Error("Error in Logger sync...",zap.Error(err))
-
 	ctx := context.Background()
 
-	logger.Info("Testing database...",
-		zap.String("CSVFileName....", config.CSVFileName),
-		zap.String("CSVSubFileName....", config.CSVSubFileName))
+	logger.Info("Testing database...",zap.String("CSVFileName....", config.CSVFileName),	zap.String("CSVSubFileName....", config.CSVSubFileName))
 
 	db := durable.OpenDatabaseClient(ctx, &durable.ConnectionInfo{
 		Host:     config.Database.Host,
@@ -84,7 +69,12 @@ func main() {
 	})
 	defer db.Disconnect(ctx)
 
+	if config.Environment == "production" {
+		logger, err = zap.NewProduction()
+	}
 
+	if err != nil {
+		logger.Error("Error in Config Environment...",zap.Error(err))
 	}
 	wEXTFileName:= bulkupload.ParseFileName(ctx,config.CSVFileName)
 	woEXTSubFileName:= bulkupload.ParseFileName(ctx,config.CSVSubFileName)
