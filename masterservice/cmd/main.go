@@ -30,6 +30,8 @@ func startService(ctx context.Context,db *mongo.Client, logger *zap.Logger,csvFi
 
 func main() {
 
+	logger, err := zap.NewDevelopment()
+
 	var options struct {
 		Config      string `short:"c" long:"config" description:"Where's the config file place, default /masterservice/internal/configs/config.yaml"`
 		Environment string `short:"e" long:"environment" default:"development"`
@@ -37,13 +39,13 @@ func main() {
 	p := flags.NewParser(&options, flags.Default)
 
 	if _, err := p.Parse(); err != nil {
-		log.Panicln(err)
+		logger.Error("Error in Parser...",zap.Error(err))
 	}
 
 	if options.Config == "" {
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
-			log.Panicln(err)
+			logger.Error("Error in File path...",zap.Error(err))
 		}
 		back := ".."
 		if strings.Contains(dir, "cmd") {
@@ -53,12 +55,22 @@ func main() {
 	}
 
 	if err := configs.Init(options.Config, options.Environment); err != nil {
-		log.Panicln(err)
+		logger.Error("Error in Config Init...",zap.Error(err))
 	}
 
-	logger, err := zap.NewDevelopment()
+
+
 
 	config := configs.AppConfig
+
+
+	if config.Environment == "production" {
+		logger, err = zap.NewProduction()
+	}
+	defer logger.Sync()
+	if err != nil {
+		logger.Error("Error in Logger sync...",zap.Error(err))
+
 	ctx := context.Background()
 
 	logger.Info("Testing database...",
@@ -72,11 +84,7 @@ func main() {
 	})
 	defer db.Disconnect(ctx)
 
-	if config.Environment == "production" {
-		logger, err = zap.NewProduction()
-	}
-	if err != nil {
-		log.Panicln(err)
+
 	}
 	wEXTFileName:= bulkupload.ParseFileName(ctx,config.CSVFileName)
 	woEXTSubFileName:= bulkupload.ParseFileName(ctx,config.CSVSubFileName)

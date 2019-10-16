@@ -10,6 +10,7 @@ import (
 )
 //RegisterCategory is used to parse CSV and insert data into mongodb.
 func RegisterCategory(ctx context.Context,database *durable.Database,csvFileName string){
+
 	var school *mongo.Collection
 	var categoryObj []model.Category
 	school = database.Db.Database("schoolservice").Collection("category")
