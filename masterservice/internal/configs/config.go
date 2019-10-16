@@ -1,38 +1,26 @@
 package configs
 
 import (
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
-
-	"github.com/ghodss/yaml"
 )
 
 // Constants of configs
 const (
 	BuildVersion = "BUILD_VERSION"
 )
+//Database is used to defining database related information .
+type Database struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+}
 
 // Option for configurations
 type Option struct {
 	Name     string `yaml:"name"`
-	Database struct {
-		User     string `yaml:"user"`
-		Password string `yaml:"password"`
-		Host     string `yaml:"host"`
-		Port     string `yaml:"port"`
-		Name     string `yaml:"name"`
-	} `yaml:"database"`
-	Github struct {
-		ClientID     string `yaml:"client_id"`
-		ClientSecret string `yaml:"client_secret"`
-	} `yaml:"github"`
-	System struct {
-		Attachments struct {
-			Storage string `yaml:"storage"`
-			Path    string `yaml:"path"`
-		} `yaml:"attachments"`
-	} `yaml:"system"`
+	Database  `yaml:"database"`
 	CSVFileName string `yaml:"csvFileName"`
-	Operators   []string `yaml:"operators"`
+	CSVSubFileName string `yaml:"csvSubFileName"`
 	Environment string
 	OperatorSet map[string]bool
 }
@@ -46,7 +34,6 @@ func Init(file, env string) error {
 	if err != nil {
 		return err
 	}
-
 	var options map[string]Option
 	err = yaml.Unmarshal(data, &options)
 	if err != nil {
@@ -54,10 +41,11 @@ func Init(file, env string) error {
 	}
 	opt := options[env]
 	opt.Environment = env
-	opt.OperatorSet = make(map[string]bool)
+	/*opt.OperatorSet = make(map[string]bool)
 	for _, operator := range opt.Operators {
+		log.Println("operator..............",operator)
 		opt.OperatorSet[operator] = true
-	}
+	}*/
 	AppConfig = &opt
 	return nil
 }

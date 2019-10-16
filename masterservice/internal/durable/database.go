@@ -10,22 +10,23 @@ import (
 
 // ConnectionInfo is the info of the postgres
 type ConnectionInfo struct {
-	User     string
-	Password string
+	//User     string
+	//Password string
 	Host     string
 	Port     string
-	Name     string
+	//Name     string
 }
 
 // Database is wrapped struct of *sql.DB
 type Database struct {
-	db *mongo.Client
+	Db *mongo.Client
 }
 
 // OpenDatabaseClient generate a database client
 func OpenDatabaseClient(ctx context.Context, c *ConnectionInfo) *mongo.Client {
+	log.Println("Getting Inside Mongo Connection..............")
 	//connStr := fmt.Sprintf("mongodb://%s:%s@%s:%s/%s?sslmode=disable", c.User, c.Password, c.Host, c.Port, c.Name)
-	connStr := fmt.Sprintf("mongodb://%s:%s%s", c.Host, c.Port,c.Name)
+	connStr := fmt.Sprintf("mongodb://%s:%s", c.Host, c.Port)
 	db, err := mongo.Connect(ctx, options.Client().ApplyURI(connStr))
 	if err != nil {
 		log.Fatal(err)
@@ -40,10 +41,11 @@ func OpenDatabaseClient(ctx context.Context, c *ConnectionInfo) *mongo.Client {
 
 // WrapDatabase create a *Database
 func WrapDatabase(db *mongo.Client) *Database {
-	return &Database{db: db}
+	return &Database{Db: db}
 }
 
 // Close the *sql.DB
 func (d *Database) Close(ctx context.Context) error {
-	return d.db.Disconnect(ctx)
+	return d.Db.Disconnect(ctx)
 }
+

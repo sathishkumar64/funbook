@@ -1,20 +1,13 @@
 default: &default
-  name: Yet another open source forum using Golang, React and PostgreSQL..
+  name: Sample CSV Parser APP
   database:
-    user: satellity
-    password: ""
-    host: localhost
-    port: 27017
-  github:
-    client_id: b9b78f
-    client_secret: d4e571ce
-  system:
-    attachments:
-      storage: "local"
-      path: "/path/to/assets"
-  csvFileName: "SubCategory.csv"
-  operators:
-    - hi@masterservice
+    host: "localhost"
+    port: "27017"
+   # user: admin
+   # password: "admin"
+  csvFileName: "Category.csv"
+  csvSubFileName: "SubCategory.csv"
+
 
 
 
